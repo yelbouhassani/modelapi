@@ -4,7 +4,8 @@ from flask import jsonify
 from flask_restful import Api
 from flask_restful import Resource
 from flask_restful import reqparse
-
+from sklearn.externals import joblib
+import pandas as pd
 
 app = Flask(__name__)
 api = Api(app)
@@ -26,15 +27,21 @@ class Predict(Resource):
 
     def get(self):
         arguments = parser.parse_args()
+        params = ['body_length', 'user_age']
+        x = [[arguments.get(key) for key in params]]
+        df = pd.DataFrame(data=x, columns=params).fillna(0)
+        print(df)
+        label = self.model.predict(df)[0]
         result = {
             'sample_uuid': arguments['sample_uuid'],
             'probability': 0.5,
-            'label': 1.0
+            'label': label
         }
         return jsonify(**result)
 
     def load_model(self):
-        return None
+        lr = joblib.load('lr_model_y.pkl')
+        return lr
 
 
 api.add_resource(Predict, '/api/v1/predict')
