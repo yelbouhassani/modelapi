@@ -1,0 +1,10 @@
+name: example-app
+channels: 
+- defaults
+- conda-forge
+dependencies:
+- python=3
+- flask
+- requests
+- flask-restful
+- numpy
